@@ -1,8 +1,6 @@
 import React from "react";
 
 export function ContactList({ filter, onFilterContact }) {
-  console.log(filter);
-
   return (
     <>
       <h2>Contacts</h2>

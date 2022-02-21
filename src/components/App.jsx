@@ -10,6 +10,37 @@ export class App extends React.Component {
     filter: "",
   };
 
+  componentDidMount() {
+    const load = (key) => {
+      try {
+        const serializedState = localStorage.getItem(key);
+        return serializedState === null
+          ? undefined
+          : JSON.parse(serializedState);
+      } catch (error) {
+        console.error("Get state error: ", error.message);
+      }
+    };
+    const localArray = load("contacts:");
+    console.log(localArray);
+    this.setState((prev) => ({ contacts: localArray }));
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (prevState.contacts !== this.state.contacts) {
+      console.log("ne raven");
+      const save = (key, value) => {
+        try {
+          const serializedState = JSON.stringify(value);
+          localStorage.setItem(key, serializedState);
+        } catch (error) {
+          console.error("Set state error: ", error.message);
+        }
+      };
+      save("contacts:", this.state.contacts);
+    }
+  }
+
   handleDelete = (event) => {
     console.log(event.target.value);
     this.setState((prev) => ({
@@ -27,6 +58,15 @@ export class App extends React.Component {
   };
 
   handleSubmit = (data) => {
+    const save = (key, value) => {
+      try {
+        const serializedState = JSON.stringify(value);
+        localStorage.setItem(key, serializedState);
+      } catch (error) {
+        console.error("Set state error: ", error.message);
+      }
+    };
+
     this.setState((prev) => {
       const res = prev.contacts.map((item) => {
         return item.name;
@@ -35,6 +75,15 @@ export class App extends React.Component {
       if (res.includes(data.name)) {
         return alert(`${data.name} is already in contacts`);
       } else {
+        save("contacts:", [
+          ...prev.contacts,
+          {
+            name: data.name,
+            number: data.number,
+            id: shortid.generate(),
+          },
+        ]);
+
         return {
           contacts: [
             ...prev.contacts,
@@ -53,7 +102,7 @@ export class App extends React.Component {
     const filteredContacts = this.state.contacts.filter((item) => {
       return item?.name?.includes(this.state.filter);
     });
-    console.log(filteredContacts);
+
     return (
       <div
         style={{
