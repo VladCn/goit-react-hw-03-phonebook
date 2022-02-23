@@ -14,16 +14,14 @@ export class App extends React.Component {
     const load = (key) => {
       try {
         const serializedState = localStorage.getItem(key);
-        return serializedState === null
-          ? undefined
-          : JSON.parse(serializedState);
+        return serializedState === null ? [] : JSON.parse(serializedState);
       } catch (error) {
         console.error("Get state error: ", error.message);
       }
     };
     const localArray = load("contacts:");
     console.log(localArray);
-    this.setState((prev) => ({ contacts: localArray }));
+    this.setState({ contacts: localArray });
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -99,7 +97,7 @@ export class App extends React.Component {
   };
 
   render() {
-    const filteredContacts = this.state.contacts.filter((item) => {
+    const filteredContacts = this.state.contacts?.filter((item) => {
       return item?.name?.includes(this.state.filter);
     });
 
